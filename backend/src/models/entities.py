@@ -1,4 +1,4 @@
-from sqlalchemy import Column,Integer,String,Float,JSON,Text
+from sqlalchemy import Column,Integer,String,Float,JSON,Text,UniqueConstraint
 from src.config.database import Base
 class User(Base):
  __tablename__='users'
@@ -18,3 +18,10 @@ class Recommendation(Base):
 class Audit(Base):
  __tablename__='audits'
  id=Column(Integer,primary_key=True);actor=Column(String(100));action=Column(String(200));created=Column(String(40))
+class Survey(Base):
+ __tablename__='surveys'
+ id=Column(Integer,primary_key=True);name=Column(String(100));request_key=Column(String(64),unique=True,nullable=True);zone=Column(String(20),default='冷藏');seed=Column(String(32));frame=Column(JSON);key_routes=Column(JSON,nullable=True);n=Column(Integer);n1=Column(Integer);n2_quota=Column(Integer,default=0);n2=Column(Integer,default=0);pool=Column(Integer,default=0);state=Column(String(20),default='inspecting');result=Column(JSON,nullable=True)
+class Inspection(Base):
+ __tablename__='inspections'
+ __table_args__=(UniqueConstraint('survey_id','shipment_id'),)
+ id=Column(Integer,primary_key=True);survey_id=Column(Integer,index=True);shipment_id=Column(Integer);code=Column(String(60));route=Column(String(60));phase=Column(Integer);probability=Column(Float);loss=Column(Float,nullable=True);state=Column(String(20),default='pending')
